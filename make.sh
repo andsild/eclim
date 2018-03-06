@@ -14,3 +14,9 @@ ant \
   -Declipse.local=/home/andsild/.eclipse/org.eclipse.platform_$ECLIPSE_VERSION \
   -Dplugins.dir=$PLUGINS_DIR \
   -Dvim.files=/home/andsild//.config/nvim # | grep -vE "\[javac\]"
+
+dir=$(find /home/andsild/.eclipse/org.eclipse.platform_$ECLIPSE_VERSION/plugins/ -name nailgun -type d)
+dir="${dir%/*}/bin"
+
+mv $dir/ng $dir/ng2
+ln -s $(which ng) $dir/ng
