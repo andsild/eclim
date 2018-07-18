@@ -20,6 +20,7 @@ echo $ECLIPSE_VERSION
 echo $PLUGINS_DIR
 
 
+
 ant \
   -Declipse.local=$HOME/.eclipse/org.eclipse.platform_$ECLIPSE_VERSION \
   -Dplugins.dir=$PLUGINS_DIR \
