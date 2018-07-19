@@ -10,28 +10,29 @@ then
   ECLIPSE_VERSION=$(awk -F = '/version/ { print $2 }' $ECLIM_ECLIPSE_HOME/.eclipseproduct)
   PLUGINS_DIR="/opt/eclipse/plugins/"
 else # nixos?
-  export ECLIM_ECLIPSE_HOME="$(ls -l $(nix-build '<myOverride>' --no-build-output -A myEclipse) | sed 's/.*->//; s/bin.*// ; s/^ // ; s#/share#/#' | grep --color=none platform )/eclipse"
+  # export ECLIM_ECLIPSE_HOME="$(ls -l $(nix-build '<myOverride>' --no-build-output -A myEclipse) | sed 's/.*->//; s/bin.*// ; s/^ // ; s#/share#/#' | grep --color=none platform )/eclipse"
+  export ECLIM_ECLIPSE_HOME="$(getExec() { while read -r line ; do awk '/exec/ { gsub(/"/, ""); print $2 }' <<<$line ; done ; }; dirname "$(cat $(cat $(readlink $(command -v eclipse)) | getExec ) | getExec))" )"
+
   ECLIPSE_VERSION=$(awk -F = '/version/ { print $2 }' $ECLIM_ECLIPSE_HOME/.eclipseproduct)
-  PLUGINS_DIR="$(grep --color=none dropins "$(nix-build '<myOverride>' --no-build-output -A myEclipse | sed 's/.*->//; s/bin.*// ; s/^ // ; s#/share#/#' | grep --color=none platform)/etc/eclipse.ini" | sed 's/.*=//')"
+  PLUGINS_DIR="$(sed -n '/dropins\.directory/ s/.*=//p' $(dirname $(readlink $(command -v eclipse)))/../etc/eclipse.ini)"
+
 fi
 
-echo $ECLIM_ECLIPSE_HOME
-echo $ECLIPSE_VERSION
-echo $PLUGINS_DIR
-
-
+echo "$ECLIM_ECLIPSE_HOME"
+echo "$ECLIPSE_VERSION"
+echo "$PLUGINS_DIR"
 
 ant \
-  -Declipse.local=$HOME/.eclipse/org.eclipse.platform_$ECLIPSE_VERSION \
-  -Dplugins.dir=$PLUGINS_DIR \
-  -Dvim.files=$XDG_CONFIG_HOME/nvim \
+  -Declipse.local="$HOME/.eclipse/org.eclipse.platform_$ECLIPSE_VERSION" \
+  -Dplugins.dir="$PLUGINS_DIR" \
+  -Dvim.files="$XDG_CONFIG_HOME/nvim" \
   || exit 1
 
 if [ -f "/etc/NIXOS" ]
 then
-  dir=$(find $HOME/.eclipse/org.eclipse.platform_$ECLIPSE_VERSION/plugins/ -name nailgun -type d)
+  dir="$(find "$HOME/.eclipse/org.eclipse.platform_$ECLIPSE_VERSION/plugins/" -name nailgun -type d)"
   dir="${dir%/*}/bin"
   
-  mv -v $dir/ng $dir/ng2
-  ln -vs $(which ng) $dir/ng
+  mv -v "$dir/ng" "$dir/ng2"
+  ln -vs "$(command -v ng)" "$dir/ng"
 fi
