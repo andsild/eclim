@@ -22,28 +22,7 @@ Welcome to Eclim on GitHub
 Overview
 ==================
 
-The primary goal of eclim is to bring Eclipse_ functionality to the Vim_
-editor.
-
-* For more details, please visit eclim.org_.
-* If you have any questions, you can post them to the `eclim user mailing
-  list`_.
-* If you would like to report a bug or feature request, feel free to create a
-  new issue_ here on github.
-
-.. _other_editors:
-
-======================
-Emacs / TextMate Users
-======================
-
-Be sure to check out the eclim clients being developed for your editor of
-choice:
-
-* `Emacs client`_
-* `TextMate client`_
-
-.. _license:
+This is a fork of eclim, which is designed to work on nixos and with neovim.
 
 ==================
 License

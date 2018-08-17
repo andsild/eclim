@@ -11,7 +11,6 @@ then
   
   PLUGINS_DIR="/opt/eclipse/plugins/"
 else # nixos?
-  # export ECLIM_ECLIPSE_HOME="$(ls -l $(nix-build '<myOverride>' --no-build-output -A myEclipse) | sed 's/.*->//; s/bin.*// ; s/^ // ; s#/share#/#' | grep --color=none platform )/eclipse"
   export ECLIM_ECLIPSE_HOME="$(getExec() { while read -r line ; do awk '/exec/ { gsub(/"/, ""); print $2 }' <<<$line ; done ; }; dirname "$(cat $(cat $(readlink $(command -v eclipse)) | getExec ) | getExec))" )"
 
   ECLIPSE_VERSION="$(awk -F = '/version/ { print $2 }' "$ECLIM_ECLIPSE_HOME/.eclipseproduct")"
