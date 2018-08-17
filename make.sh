@@ -8,13 +8,17 @@ if [ -d "/opt/eclipse" ]
 then
   export ECLIM_ECLIPSE_HOME="/opt/eclipse/"
   ECLIPSE_VERSION=$(awk -F = '/version/ { print $2 }' $ECLIM_ECLIPSE_HOME/.eclipseproduct)
+  
   PLUGINS_DIR="/opt/eclipse/plugins/"
 else # nixos?
   # export ECLIM_ECLIPSE_HOME="$(ls -l $(nix-build '<myOverride>' --no-build-output -A myEclipse) | sed 's/.*->//; s/bin.*// ; s/^ // ; s#/share#/#' | grep --color=none platform )/eclipse"
   export ECLIM_ECLIPSE_HOME="$(getExec() { while read -r line ; do awk '/exec/ { gsub(/"/, ""); print $2 }' <<<$line ; done ; }; dirname "$(cat $(cat $(readlink $(command -v eclipse)) | getExec ) | getExec))" )"
 
-  ECLIPSE_VERSION=$(awk -F = '/version/ { print $2 }' $ECLIM_ECLIPSE_HOME/.eclipseproduct)
+  ECLIPSE_VERSION="$(awk -F = '/version/ { print $2 }' "$ECLIM_ECLIPSE_HOME/.eclipseproduct")"
   PLUGINS_DIR="$(sed -n '/dropins\.directory/ s/.*=//p' $(dirname $(readlink $(command -v eclipse)))/../etc/eclipse.ini)"
+  ECLIPSE_HOME_DIR="$HOME/.eclipse/org.eclipse.platform_$ECLIPSE_VERSION"
+  rm -rv "${ECLIPSE_HOME_DIR}"/dropins
+  ln -s "$PLUGINS_DIR" "${ECLIPSE_HOME_DIR}"/
 
 fi
 

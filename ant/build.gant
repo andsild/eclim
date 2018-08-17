@@ -152,6 +152,8 @@ target(name: 'init'){
   if (getVariable('eclipse') != getVariable('eclipse.local')){
     classpaths << getVariable('eclipse.local')
   }
+  ant.echo(classpaths)
+  ant.echo('aa')
   path(id: 'classpath'){
     fileset(dir: '.', includes: '**/lib/*.jar')
     for (path in classpaths){
@@ -169,6 +171,7 @@ target(name: 'init'){
         include(name: 'plugins/org.eclipse.*')
       }
     }
+
     // for gentoo
     fileset(dir: '/usr/share/', erroronmissingdir: false,
       includes: 'swt-*/lib/*.jar')
@@ -180,6 +183,7 @@ target(name: 'init'){
       }
     }
   }
+
 }
 
 target(name: 'build'){
@@ -940,7 +944,7 @@ def initPlugins(){
   }
 
   dropinDirs.each { dropins ->
-    ant.echo("Scan dropins dir: ${dropins}", level: 'debug')
+    ant.echo("Scan dropins dir: ${dropins}", level: 'info')
     if (dropins.exists()){
       dropins.eachDirRecurse{ dropin ->
         if (dropin.getName().equals("features")){
